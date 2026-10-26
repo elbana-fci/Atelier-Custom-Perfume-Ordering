@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./demo.db"
+}
+
+model Setting {
+  id   String @id
+  data String
+}
+
+model Customer {
+  id       String    @id @default(cuid())
+  name     String
+  phone    String
+  email    String    @unique
+  formulas Formula[]
+}
+
+model Formula {
+  id         String    @id @default(cuid())
+  token      String    @unique
+  name       String
+  status     String    @default("PENDING")
+  snapshot   String
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  createdAt  DateTime  @default(now())
+  reorders   Reorder[]
+}
+
+model Reorder {
+  id        String   @id @default(cuid())
+  formulaId String
+  formula   Formula  @relation(fields: [formulaId], references: [id])
+  sizeMl    Float
+  price     Float
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+}
+
+model Email {
+  id        String   @id @default(cuid())
+  recipient String
+  subject   String
+  body      String
+  status    String   @default("DEMO")
+  createdAt DateTime @default(now())
+}
